@@ -12,27 +12,16 @@ def quicksort(array, low, high):
     high : int
         largest index to consider
     """
-    print 'start-------------------'
     if low >= high:
-        print 'recursion base case'
         return
-    print 'sorting', array[low:high+1]
     part = randint(low, high)
-    print 'part', part
     swap(array, part, low)
-    print 'swapped', array[low:high+1]
     counter = low
     for i in range(low+1, high+1):
-        print i
         if array[i] < array[low]:
             counter+=1
-            print 'swapping', counter, i
             swap(array, counter, i)
-    print 'counter', counter
-    print 'b4-swap-back', array[low:high+1]
     swap(array, low, counter)
-    print 'swapped-back', array[low:high+1]
-    print 'end----------------------'
     quicksort(array, low, counter-1)
     quicksort(array, counter+1, high)
 
