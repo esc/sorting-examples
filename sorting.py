@@ -3,7 +3,7 @@ from random import randint, shuffle, choice
 def swap(array, i, j):
     array[i], array[j] = array[j], array[i]
 
-def quicksort(array, low, high):
+def quicksort_ip(array, low, high):
     """ Sort 'array' in place.
     Parameters
     ----------
@@ -24,8 +24,8 @@ def quicksort(array, low, high):
     quicksort(array, low, counter-1)
     quicksort(array, counter+1, high)
 
-def mergesort(array):
-    """ Stable mergesort."""
+def quicksort_nip(array):
+    """ Stable out-of-place quicksort."""
     if len(array) <= 1:
         return array
     lower, upper, center = [], [], []
@@ -42,7 +42,7 @@ def mergesort(array):
 array = range(0, 32)
 shuffle(array)
 print array
-print mergesort(array)
+print quicksort_nip(array)
 print array
-quicksort(array, 0, len(array)-1)
+quicksort_ip(array, 0, len(array)-1)
 print array
