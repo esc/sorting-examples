@@ -1,5 +1,6 @@
 from random import randint, shuffle, choice
 from timeit import Timer
+import numpy
 
 def swap(array, i, j):
     array[i], array[j] = array[j], array[i]
@@ -62,10 +63,10 @@ def merge(array1, array2):
 
 def do_timing(timer):
     number=500
-    print ("%.2f usec/pass" %
-    (number * timer.timeit(number=number)/number))
+    print ("%.2f mseconds/pass" %
+    (1000 * timer.timeit(number=number)/number))
 
-array_size=1024
+array_size=256
 array = range(array_size)
 
 def testing():
@@ -92,11 +93,18 @@ def testing():
     array.sort()
     print array
 
+    a = numpy.arange(array_size)
+    numpy.random.shuffle(a)
+    print 'Numpy'
+    print a
+    a.sort()
+    print a
+
 def timing():
 
     print "Quicksort not-in-place"
     t = Timer("""
-    array = range(0, %i)
+    array = range(%i)
     shuffle(array)
     quicksort_nip(array)
     """% array_size, "from __main__ import *" )
@@ -104,7 +112,7 @@ def timing():
 
     print "Quicksort in-place"
     t = Timer("""
-    array = range(0, %i)
+    array = range(%i)
     shuffle(array)
     quicksort_ip(array, 0, len(array)-1)
     """% array_size, "from __main__ import *")
@@ -112,7 +120,7 @@ def timing():
 
     print 'Mergesort'
     t = Timer("""
-    array = range(0, %i)
+    array = range(%i)
     shuffle(array)
     mergesort(array)
     """% array_size, "from __main__ import *")
@@ -120,10 +128,19 @@ def timing():
 
     print 'Native'
     t = Timer("""
-    array = range(0, %i)
+    array = range(%i)
     shuffle(array)
     array.sort()
     """% array_size, "from __main__ import *")
     do_timing(t)
+
+    print 'Numpy'
+    t = Timer("""
+    a = numpy.arange(%i)
+    numpy.random.shuffle(a)
+    a.sort()
+    """% array_size, "from __main__ import *")
+    do_timing(t)
+
 if __name__ == '__main__':
     timing()
