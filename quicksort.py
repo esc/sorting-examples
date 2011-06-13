@@ -14,9 +14,8 @@ def quicksort(array, low, high):
     """
     if low >= high:
         return
-    part = randint(low, high)
+    part, counter = randint(low, high), low
     swap(array, part, low)
-    counter = low
     for i in range(low+1, high+1):
         if array[i] < array[low]:
             counter+=1
