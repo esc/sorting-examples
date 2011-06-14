@@ -129,6 +129,38 @@ def merge2(array1, array2):
     result.reverse()
     return result
 
+def mergesort3(array):
+    """ Stable mergesort.
+
+    This one uses indices instead of popping from the list. Also the
+    merge-helper is nicer. But code is less pythonic (uses indices).
+
+    Parameters
+    ----------
+    array : list
+        a possibly unordered list
+    Returns
+    -------
+    sorted : list
+        a sorted list
+    """
+    if len(array) <= 1:
+        return array
+    part = len(array)//2
+    return merge3(mergesort3(array[:part]), mergesort3(array[part:]))
+
+def merge3(array1, array2):
+    result = []
+    i,j = 0,0
+    while i < len(array1) and j < len(array2):
+        if array1[i] <= array2[j]:
+            result.append(array1[i])
+            i+=1
+        else:
+            result.append(array2[j])
+            j+=1
+    return result
+
 def do_timing(timer):
     number=500
     print ("%.2f mseconds/pass" %
@@ -157,6 +189,11 @@ def testing():
 
     shuffle(array)
     print 'Mergesort2'
+    print array
+    print mergesort2(array)
+
+    shuffle(array)
+    print 'Mergesort3'
     print array
     print mergesort2(array)
 
@@ -207,6 +244,14 @@ def timing():
     """% array_size, "from __main__ import *")
     do_timing(t)
 
+    print 'Mergesort3'
+    t = Timer("""
+    array = range(%i)
+    shuffle(array)
+    mergesort3(array)
+    """% array_size, "from __main__ import *")
+    do_timing(t)
+
     print 'Native'
     t = Timer("""
     array = range(%i)
@@ -224,6 +269,7 @@ def timing():
     do_timing(t)
 
 if __name__ == '__main__':
+    testing()
     timing()
 
 #Quicksort not-in-place
@@ -234,6 +280,8 @@ if __name__ == '__main__':
 #3.94 mseconds/pass
 #Mergesort2
 #3.49 mseconds/pass
+#Mergesort3
+#1.17 mseconds/pass
 #Native
 #0.38 mseconds/pass
 #Numpy
