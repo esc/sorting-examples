@@ -171,6 +171,8 @@ def merge3(array1, array2):
         else:
             result.append(array2[j])
             j+=1
+    result += array1[i:]
+    result += array2[j:]
     return result
 
 number=10
