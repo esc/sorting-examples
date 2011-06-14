@@ -4,15 +4,65 @@ import numpy
 import numpy.testing
 import nose.tools as nt
 
-def quicksort_val(array):
-    """ Stable out-of-place quicksort.
+"""
+    Quick and dirty demo and comparison of various sorting algorithm
+    implementations in Python.  As a benchmark the native python list sorting
+    (Timsort) and the numpy Quicksort are included in the benchmark. Basic
+    testing is performed.
 
-    This is written by yours truely in pythonic style.
+    Author: Valentin Haenel
+    Licence: wtfpl unless specified otherwise in attribution
+
+    Current profiling on my machine (1.6 Ghz Dual Core Intel 3GB Ram:
+
+    Timing
+    -----------------------------------------------------------
+    Quicksort (vals's)
+    666.68 mseconds/pass
+    Quicksort in-place
+    1249.86 mseconds/pass
+    Quicksort list comprehension
+    993.46 mseconds/pass
+    Mergesort
+    4212.00 mseconds/pass
+    Mergesort2
+    1972.76 mseconds/pass
+    Mergesort3
+    1542.45 mseconds/pass
+    Native
+    166.63 mseconds/pass
+    Numpy
+    36.57 mseconds/pass
+
+    Leading to the following ranking:
+        1) Numpy
+        2) Native
+        3) Quicksort (vals's)
+        4) Quicksort list comprehension
+        5) Quicksort in-place
+        6) Mergesort3
+        7) Mergesort2
+        8) Mergesort1
+
+    A couple of things to note:
+        a) Native and Numpy are an order of magnitude faster.
+        b) Quicksort is faster than Mergesort, which is to be expected
+        theoretically. (Maybe also the reason for numpy being faster than
+        native, since Timsort is a Mergesort/Insertionsort hybrid)
+        c) What baffles me, is that the inplace Quicksort isn't faster than the
+        one that allocates more and more lists.
+"""
+
+def quicksort_val(array):
+    """ Stable out-of-place Quicksort.
+
+    This is written by yours truly in pythonic style.
 
     Parameters
     ----------
     array : list
         a possibly unordered list
+
     Returns
     -------
     sorted : list
@@ -36,7 +86,7 @@ def swap(array, i, j):
     array[i], array[j] = array[j], array[i]
 
 def quicksort_ip(array, low, high):
-    """ Sort 'array' in place.
+    """ Quicksort 'array' in-place.
 
     This is converted from C code found in chapter three of:
     Beautiful Code
@@ -69,7 +119,7 @@ def quicksort_ip(array, low, high):
 
 
 def quicksort_lc(array):
-    """ This is a quicksort using list comprehensions.
+    """ This is a Quicksort using list comprehensions.
 
     It is taken from:
         http://en.literateprograms.org/Quicksort_(Python)
@@ -81,6 +131,8 @@ def quicksort_lc(array):
     ----------
     array : list
         a possibly unordered list
+        WARNING: this should be copied before use, as it will shrink.
+
     Returns
     -------
     sorted : list
@@ -96,18 +148,19 @@ def quicksort_lc(array):
 
 
 def mergesort(array):
-    """ Stable mergesort.
+    """ Stable Mergesort (first attempt).
 
     Written by yours truly but inspired by pseudocode from:
         http://en.wikipedia.org/wiki/Merge_sort
 
     Has the downside of popping items off of a list from the front, causing
-    resizeing to happen all the time.
+    resizing to happen all the time.
 
     Parameters
     ----------
     array : list
         a possibly unordered list
+
     Returns
     -------
     sorted : list
@@ -134,7 +187,7 @@ def merge(array1, array2):
     return result
 
 def mergesort2(array):
-    """ Stable mergesort (second version).
+    """ Stable Mergesort (second version).
 
     An improvement on mergesort.
 
@@ -146,6 +199,7 @@ def mergesort2(array):
     ----------
     array : list
         a possibly unordered list
+
     Returns
     -------
     sorted : list
@@ -170,16 +224,16 @@ def merge2(array1, array2):
             result.append(array1.pop())
         else:
             result.append(array2.pop())
-    # here we need to reverse the array, so that smaller values are at the
-    # beginning
-    # in numpy we could do this with strides, obviously
-    # Still popping values of the end of the list and reversing is faster than
-    # popping them off the front and resizing
+    # Here we need to reverse the array, so that smaller values are at the
+    # beginning.
+    # In numpy we could do this with strides, obviously.
+    # Still, popping values of the end of the list and reversing is faster than
+    # popping them off the front and resizing.
     result.reverse()
     return result
 
 def mergesort3(array):
-    """ Stable mergesort.
+    """ Stable mergesort (version three).
 
     The code was taken from:
         http://en.literateprograms.org/Merge_sort_(Python)
@@ -192,6 +246,7 @@ def mergesort3(array):
     ----------
     array : list
         a possibly unordered list
+
     Returns
     -------
     sorted : list
@@ -203,7 +258,7 @@ def mergesort3(array):
     return merge3(mergesort3(array[:part]), mergesort3(array[part:]))
 
 def merge3(array1, array2):
-    """ Helper for mergesort2."""
+    """ Helper for mergesort3."""
     result = []
     i,j = 0,0
     while i < len(array1) and j < len(array2):
@@ -232,7 +287,7 @@ def testing():
     print "-----------------------------------------------------------"
 
     shuffle(array)
-    print "Quicksort not-in-place"
+    print "Quicksort (val's)"
     nt.assert_equal(quicksort_val(array),original)
 
     shuffle(array)
@@ -276,7 +331,7 @@ def timing():
     print 'Timing'
     print "-----------------------------------------------------------"
 
-    print "Quicksort not-in-place"
+    print "Quicksort (val's)"
     t = Timer("""
     array = range(%i)
     shuffle(array)
@@ -346,17 +401,3 @@ if __name__ == '__main__':
     testing()
     timing()
 
-#Quicksort not-in-place
-#2.05 mseconds/pass
-#Quicksort in-place
-#2.97 mseconds/pass
-#Mergesort
-#3.94 mseconds/pass
-#Mergesort2
-#3.49 mseconds/pass
-#Mergesort3
-#1.17 mseconds/pass
-#Native
-#0.38 mseconds/pass
-#Numpy
-#0.12 mseconds/pass
