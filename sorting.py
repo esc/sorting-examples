@@ -61,6 +61,33 @@ def merge(array1, array2):
             result.append(array2.pop(0))
     return result
 
+def mergesort2(array):
+    if len(array) <= 1:
+        return array
+    part = len(array)//2
+    return merge2(mergesort2(array[:part]), mergesort2(array[part:]))
+
+def merge2(array1, array2):
+    result = []
+    while len(array1) or len(array2):
+        # larger values go in first
+        if len(array1) and len(array2):
+            if array1[-1] >= array2[-1]:
+                result.append(array1.pop())
+            else:
+                result.append(array2.pop())
+        elif len(array1):
+            result.append(array1.pop())
+        else:
+            result.append(array2.pop())
+    # here we need to reverse the array, so that smaller values are at the
+    # beginning
+    # in numpy we could do this with strides, obviously
+    # Still popping values of the end of the list and reversing is faster than
+    # popping them off the front and resizing
+    result.reverse()
+    return result
+
 def do_timing(timer):
     number=500
     print ("%.2f mseconds/pass" %
@@ -86,6 +113,11 @@ def testing():
     print 'Mergesort'
     print array
     print mergesort(array)
+
+    shuffle(array)
+    print 'Mergesort2'
+    print array
+    print mergesort2(array)
 
     shuffle(array)
     print 'Native'
@@ -126,6 +158,14 @@ def timing():
     """% array_size, "from __main__ import *")
     do_timing(t)
 
+    print 'Mergesort2'
+    t = Timer("""
+    array = range(%i)
+    shuffle(array)
+    mergesort2(array)
+    """% array_size, "from __main__ import *")
+    do_timing(t)
+
     print 'Native'
     t = Timer("""
     array = range(%i)
@@ -151,6 +191,8 @@ if __name__ == '__main__':
 #2.97 mseconds/pass
 #Mergesort
 #3.94 mseconds/pass
+#Mergesort2
+#3.49 mseconds/pass
 #Native
 #0.38 mseconds/pass
 #Numpy
