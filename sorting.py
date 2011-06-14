@@ -1,11 +1,5 @@
-from random import randint, shuffle, choice, randrange
-from timeit import Timer
-import numpy
-import numpy.testing
-import nose.tools as nt
-
-"""
-    Quick and dirty demo and comparison of various sorting algorithm
+#!/usr/bin/python
+""" Quick and dirty demo and comparison of various sorting algorithm
     implementations in Python.  As a benchmark the native python list sorting
     (Timsort) and the numpy Quicksort are included in the benchmark. Basic
     testing is performed.
@@ -52,6 +46,12 @@ import nose.tools as nt
         c) What baffles me, is that the inplace Quicksort isn't faster than the
         one that allocates more and more lists.
 """
+
+from random import randint, shuffle, choice, randrange
+from timeit import Timer
+import numpy
+import numpy.testing
+import nose.tools as nt
 
 def quicksort_val(array):
     """ Stable out-of-place Quicksort.
