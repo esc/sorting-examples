@@ -1,6 +1,8 @@
 from random import randint, shuffle, choice, randrange
 from timeit import Timer
 import numpy
+import numpy.testing
+import nose.tools as nt
 
 def swap(array, i, j):
     array[i], array[j] = array[j], array[i]
@@ -171,62 +173,64 @@ def merge3(array1, array2):
             j+=1
     return result
 
+number=10
+array_size=50000
 def do_timing(timer):
-    number=500
     print ("%.2f mseconds/pass" %
     (1000 * timer.timeit(number=number)/number))
 
-array_size=256
 array = range(array_size)
+original=array[:]
 
 def testing():
 
+    print 'Testing'
+    print "-----------------------------------------------------------"
+
     shuffle(array)
     print "Quicksort not-in-place"
-    print array
-    print quicksort_nip(array)
+    nt.assert_equal(quicksort_nip(array),original)
 
     shuffle(array)
     print "Quicksort in-place"
-    print array
     quicksort_ip(array, 0, len(array)-1)
-    print array
+    nt.assert_equal(array,original)
 
     shuffle(array)
     print "Quicksort list comprehension"
-    print array
-    quicksort_lc(array[:])
+    to_sort = array[:]
+    nt.assert_equal(quicksort_lc(to_sort), original)
 
-    print array
     shuffle(array)
     print 'Mergesort'
-    print array
-    print mergesort(array)
+    nt.assert_equal(mergesort(array),original)
 
     shuffle(array)
     print 'Mergesort2'
-    print array
-    print mergesort2(array)
+    nt.assert_equal(mergesort2(array),original)
 
     shuffle(array)
     print 'Mergesort3'
-    print array
-    print mergesort3(array)
+    nt.assert_equal(mergesort3(array),original)
 
     shuffle(array)
     print 'Native'
-    print array
     array.sort()
-    print array
+    nt.assert_equal(array,original)
 
     a = numpy.arange(array_size)
+    o = a.copy()
     numpy.random.shuffle(a)
     print 'Numpy'
-    print a
     a.sort()
-    print a
+    numpy.testing.assert_array_equal(a,o)
+
+    print "-----------------------------------------------------------"
 
 def timing():
+
+    print 'Timing'
+    print "-----------------------------------------------------------"
 
     print "Quicksort not-in-place"
     t = Timer("""
@@ -291,6 +295,8 @@ def timing():
     a.sort()
     """% array_size, "from __main__ import *")
     do_timing(t)
+
+    print "-----------------------------------------------------------"
 
 if __name__ == '__main__':
     testing()
