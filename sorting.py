@@ -7,6 +7,7 @@ def swap(array, i, j):
 
 def quicksort_ip(array, low, high):
     """ Sort 'array' in place.
+
     Parameters
     ----------
     low : int
@@ -27,7 +28,17 @@ def quicksort_ip(array, low, high):
     quicksort_ip(array, counter+1, high)
 
 def quicksort_nip(array):
-    """ Stable out-of-place quicksort."""
+    """ Stable out-of-place quicksort.
+
+    Parameters
+    ----------
+    array : list
+        a possibly unordered list
+    Returns
+    -------
+    sorted : list
+        a sorted list
+    """
     if len(array) <= 1:
         return array
     lower, upper, center = [], [], []
@@ -42,12 +53,27 @@ def quicksort_nip(array):
     return quicksort_nip(lower) + center + quicksort_nip(upper)
 
 def mergesort(array):
+    """ Stable mergesort.
+
+    Has the downside of popping items off of a list from the front, causing
+    resizeing to happen all the time.
+
+    Parameters
+    ----------
+    array : list
+        a possibly unordered list
+    Returns
+    -------
+    sorted : list
+        a sorted list
+    """
     if len(array) <= 1:
         return array
     part = len(array)//2
     return merge(mergesort(array[:part]), mergesort(array[part:]))
 
 def merge(array1, array2):
+    """ Helper for mergesort."""
     result = []
     while len(array1) or len(array2):
         if len(array1) and len(array2):
@@ -62,6 +88,21 @@ def merge(array1, array2):
     return result
 
 def mergesort2(array):
+    """ Stable mergesort.
+
+    This implementation alleviates the problem of having to pop of the front of
+    the list, but then needs to reverse it after each merge of two lists. Minor,
+    but statistically significant speed up.
+
+    Parameters
+    ----------
+    array : list
+        a possibly unordered list
+    Returns
+    -------
+    sorted : list
+        a sorted list
+    """
     if len(array) <= 1:
         return array
     part = len(array)//2
