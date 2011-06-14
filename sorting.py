@@ -111,12 +111,11 @@ def quicksort_ip(array, low, high):
     swap(array, part, low)
     for i in xrange(low+1, high+1):
         if array[i] < array[low]:
-            counter+=1
+            counter += 1
             swap(array, counter, i)
     swap(array, low, counter)
     quicksort_ip(array, low, counter-1)
     quicksort_ip(array, counter+1, high)
-
 
 def quicksort_lc(array):
     """ This is a Quicksort using list comprehensions.
@@ -145,7 +144,6 @@ def quicksort_lc(array):
         lesser = quicksort_lc([l for l in array if l < pivot])
         greater = quicksort_lc([l for l in array if l >= pivot])
         return lesser + [pivot] + greater
-
 
 def mergesort(array):
     """ Stable Mergesort (first attempt).
@@ -260,69 +258,70 @@ def mergesort3(array):
 def merge3(array1, array2):
     """ Helper for mergesort3."""
     result = []
-    i,j = 0,0
+    i, j = 0, 0
     while i < len(array1) and j < len(array2):
         if array1[i] <= array2[j]:
             result.append(array1[i])
-            i+=1
+            i += 1
         else:
             result.append(array2[j])
-            j+=1
+            j += 1
     result += array1[i:]
     result += array2[j:]
     return result
 
-number=10
-array_size=50000
+number_repeats = 10
+array_size = 50000
 def do_timing(timer):
+    """ Execute timer and print result."""
     print ("%.2f mseconds/pass" %
-    (1000 * timer.timeit(number=number)/number))
+    (1000 * timer.timeit(number=number_repeats)/number_repeats))
 
-array = range(array_size)
-original=array[:]
+target_array = range(array_size)
+original = target_array[:]
 
 def testing():
 
     print 'Testing'
     print "-----------------------------------------------------------"
 
-    shuffle(array)
+    shuffle(target_array)
     print "Quicksort (val's)"
-    nt.assert_equal(quicksort_val(array),original)
+    nt.assert_equal(quicksort_val(target_array), original)
 
-    shuffle(array)
+    shuffle(target_array)
     print "Quicksort in-place"
-    quicksort_ip(array, 0, len(array)-1)
-    nt.assert_equal(array,original)
+    quicksort_ip(target_array, 0, len(target_array)-1)
+    nt.assert_equal(target_array, original)
 
-    shuffle(array)
+    shuffle(target_array)
     print "Quicksort list comprehension"
-    to_sort = array[:]
+    to_sort = target_array[:]
     nt.assert_equal(quicksort_lc(to_sort), original)
 
-    shuffle(array)
+    shuffle(target_array)
     print 'Mergesort'
-    nt.assert_equal(mergesort(array),original)
+    nt.assert_equal(mergesort(target_array), original)
 
-    shuffle(array)
+    shuffle(target_array)
     print 'Mergesort2'
-    nt.assert_equal(mergesort2(array),original)
+    nt.assert_equal(mergesort2(target_array), original)
 
-    shuffle(array)
+    shuffle(target_array)
     print 'Mergesort3'
-    nt.assert_equal(mergesort3(array),original)
+    nt.assert_equal(mergesort3(target_array), original)
 
-    shuffle(array)
+    shuffle(target_array)
     print 'Native'
-    array.sort()
-    nt.assert_equal(array,original)
+    target_array.sort()
+    nt.assert_equal(target_array, original)
 
-    a = numpy.arange(array_size)
-    o = a.copy()
-    numpy.random.shuffle(a)
+    np_array = numpy.arange(array_size)
+    np_original = np_array.copy()
+    numpy.random.shuffle(np_array)
     print 'Numpy'
-    a.sort()
-    numpy.testing.assert_array_equal(a,o)
+    np_array.sort()
+    numpy.testing.assert_array_equal(np_array, np_original)
 
     print "-----------------------------------------------------------"
 
@@ -333,65 +332,65 @@ def timing():
 
     print "Quicksort (val's)"
     t = Timer("""
-    array = range(%i)
-    shuffle(array)
-    quicksort_val(array)
+    target_array = range(%i)
+    shuffle(target_array)
+    quicksort_val(target_array)
     """% array_size, "from __main__ import *" )
     do_timing(t)
 
     print "Quicksort in-place"
     t = Timer("""
-    array = range(%i)
-    shuffle(array)
-    quicksort_ip(array, 0, len(array)-1)
+    target_array = range(%i)
+    shuffle(target_array)
+    quicksort_ip(target_array, 0, len(target_array)-1)
     """% array_size, "from __main__ import *")
     do_timing(t)
 
     print "Quicksort list comprehension"
     t = Timer("""
-    array = range(%i)
-    shuffle(array)
-    quicksort_lc(array[:])
+    target_array = range(%i)
+    shuffle(target_array)
+    quicksort_lc(target_array[:])
     """% array_size, "from __main__ import *")
     do_timing(t)
 
     print 'Mergesort'
     t = Timer("""
-    array = range(%i)
-    shuffle(array)
-    mergesort(array)
+    target_array = range(%i)
+    shuffle(target_array)
+    mergesort(target_array)
     """% array_size, "from __main__ import *")
     do_timing(t)
 
     print 'Mergesort2'
     t = Timer("""
-    array = range(%i)
-    shuffle(array)
-    mergesort2(array)
+    target_array = range(%i)
+    shuffle(target_array)
+    mergesort2(target_array)
     """% array_size, "from __main__ import *")
     do_timing(t)
 
     print 'Mergesort3'
     t = Timer("""
-    array = range(%i)
-    shuffle(array)
-    mergesort3(array)
+    target_array = range(%i)
+    shuffle(target_array)
+    mergesort3(target_array)
     """% array_size, "from __main__ import *")
     do_timing(t)
 
     print 'Native'
     t = Timer("""
-    array = range(%i)
-    shuffle(array)
-    array.sort()
+    target_array = range(%i)
+    shuffle(target_array)
+    target_array.sort()
     """% array_size, "from __main__ import *")
     do_timing(t)
 
     print 'Numpy'
     t = Timer("""
-    a = numpy.arange(%i)
-    numpy.random.shuffle(a)
-    a.sort()
+    np_array = numpy.arange(%i)
+    numpy.random.shuffle(np_array)
+    np_array.sort()
     """% array_size, "from __main__ import *")
     do_timing(t)
 
