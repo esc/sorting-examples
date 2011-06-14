@@ -19,7 +19,7 @@ def quicksort_ip(array, low, high):
         return
     part, counter = randint(low, high), low
     swap(array, part, low)
-    for i in range(low+1, high+1):
+    for i in xrange(low+1, high+1):
         if array[i] < array[low]:
             counter+=1
             swap(array, counter, i)
@@ -211,7 +211,7 @@ def testing():
     shuffle(array)
     print 'Mergesort3'
     print array
-    print mergesort2(array)
+    print mergesort3(array)
 
     shuffle(array)
     print 'Native'
