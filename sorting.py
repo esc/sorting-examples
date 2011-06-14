@@ -144,3 +144,14 @@ def timing():
 
 if __name__ == '__main__':
     timing()
+
+#Quicksort not-in-place
+#2.05 mseconds/pass
+#Quicksort in-place
+#2.97 mseconds/pass
+#Mergesort
+#3.94 mseconds/pass
+#Native
+#0.38 mseconds/pass
+#Numpy
+#0.12 mseconds/pass
