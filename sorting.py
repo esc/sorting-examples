@@ -4,33 +4,10 @@ import numpy
 import numpy.testing
 import nose.tools as nt
 
-def swap(array, i, j):
-    array[i], array[j] = array[j], array[i]
-
-def quicksort_ip(array, low, high):
-    """ Sort 'array' in place.
-
-    Parameters
-    ----------
-    low : int
-        smallest index to consider
-    high : int
-        largest index to consider
-    """
-    if low >= high:
-        return
-    part, counter = randint(low, high), low
-    swap(array, part, low)
-    for i in xrange(low+1, high+1):
-        if array[i] < array[low]:
-            counter+=1
-            swap(array, counter, i)
-    swap(array, low, counter)
-    quicksort_ip(array, low, counter-1)
-    quicksort_ip(array, counter+1, high)
-
-def quicksort_nip(array):
+def quicksort_val(array):
     """ Stable out-of-place quicksort.
+
+    This is written by yours truely in pythonic style.
 
     Parameters
     ----------
@@ -52,9 +29,63 @@ def quicksort_nip(array):
             upper.append(i)
         else:
             center.append(i)
-    return quicksort_nip(lower) + center + quicksort_nip(upper)
+    return quicksort_val(lower) + center + quicksort_val(upper)
+
+def swap(array, i, j):
+    """ Helper function for quicksort_ip. """
+    array[i], array[j] = array[j], array[i]
+
+def quicksort_ip(array, low, high):
+    """ Sort 'array' in place.
+
+    This is converted from C code found in chapter three of:
+    Beautiful Code
+    Leading Programmers Explain How They Think
+
+    Edited By Andy Oram & Greg Wilson
+    First Edition Juli 2007
+    ISBN 978-0-596-51004-6
+
+    Should be fast as hell, no idea why its so slow.
+
+    Parameters
+    ----------
+    low : int
+        smallest index to consider
+    high : int
+        largest index to consider
+    """
+    if low >= high:
+        return
+    part, counter = randint(low, high), low
+    swap(array, part, low)
+    for i in xrange(low+1, high+1):
+        if array[i] < array[low]:
+            counter+=1
+            swap(array, counter, i)
+    swap(array, low, counter)
+    quicksort_ip(array, low, counter-1)
+    quicksort_ip(array, counter+1, high)
+
 
 def quicksort_lc(array):
+    """ This is a quicksort using list comprehensions.
+
+    It is taken from:
+        http://en.literateprograms.org/Quicksort_(Python)
+    According to the article it was the fastest of all of the three. However it
+    doesn't run faster than val's quicksort. Perhaps this is due to having to
+    iterate over the array twice each time, for each list comprehension?
+
+    Parameters
+    ----------
+    array : list
+        a possibly unordered list
+    Returns
+    -------
+    sorted : list
+        a sorted list
+    """
     if array == []: 
         return []
     else:
@@ -66,6 +97,9 @@ def quicksort_lc(array):
 
 def mergesort(array):
     """ Stable mergesort.
+
+    Written by yours truly but inspired by pseudocode from:
+        http://en.wikipedia.org/wiki/Merge_sort
 
     Has the downside of popping items off of a list from the front, causing
     resizeing to happen all the time.
@@ -100,7 +134,9 @@ def merge(array1, array2):
     return result
 
 def mergesort2(array):
-    """ Stable mergesort.
+    """ Stable mergesort (second version).
+
+    An improvement on mergesort.
 
     This implementation alleviates the problem of having to pop of the front of
     the list, but then needs to reverse it after each merge of two lists. Minor,
@@ -121,6 +157,7 @@ def mergesort2(array):
     return merge2(mergesort2(array[:part]), mergesort2(array[part:]))
 
 def merge2(array1, array2):
+    """ Helper for mergesort2."""
     result = []
     while len(array1) or len(array2):
         # larger values go in first
@@ -144,8 +181,12 @@ def merge2(array1, array2):
 def mergesort3(array):
     """ Stable mergesort.
 
+    The code was taken from:
+        http://en.literateprograms.org/Merge_sort_(Python)
+
     This one uses indices instead of popping from the list. Also the
-    merge-helper is nicer. But code is less pythonic (uses indices).
+    merge-helper is nicer. But code is less pythonic (uses indices). Faster than
+    the previous two implementations.
 
     Parameters
     ----------
@@ -162,6 +203,7 @@ def mergesort3(array):
     return merge3(mergesort3(array[:part]), mergesort3(array[part:]))
 
 def merge3(array1, array2):
+    """ Helper for mergesort2."""
     result = []
     i,j = 0,0
     while i < len(array1) and j < len(array2):
@@ -191,7 +233,7 @@ def testing():
 
     shuffle(array)
     print "Quicksort not-in-place"
-    nt.assert_equal(quicksort_nip(array),original)
+    nt.assert_equal(quicksort_val(array),original)
 
     shuffle(array)
     print "Quicksort in-place"
@@ -238,7 +280,7 @@ def timing():
     t = Timer("""
     array = range(%i)
     shuffle(array)
-    quicksort_nip(array)
+    quicksort_val(array)
     """% array_size, "from __main__ import *" )
     do_timing(t)
 
