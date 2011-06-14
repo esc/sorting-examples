@@ -1,4 +1,4 @@
-from random import randint, shuffle, choice
+from random import randint, shuffle, choice, randrange
 from timeit import Timer
 import numpy
 
@@ -51,6 +51,16 @@ def quicksort_nip(array):
         else:
             center.append(i)
     return quicksort_nip(lower) + center + quicksort_nip(upper)
+
+def quicksort_lc(array):
+    if array == []: 
+        return []
+    else:
+        pivot = array.pop(randrange(len(array)))
+        lesser = quicksort_lc([l for l in array if l < pivot])
+        greater = quicksort_lc([l for l in array if l >= pivot])
+        return lesser + [pivot] + greater
+
 
 def mergesort(array):
     """ Stable mergesort.
@@ -183,6 +193,12 @@ def testing():
     print array
 
     shuffle(array)
+    print "Quicksort list comprehension"
+    print array
+    quicksort_lc(array[:])
+
+    print array
+    shuffle(array)
     print 'Mergesort'
     print array
     print mergesort(array)
@@ -225,6 +241,14 @@ def timing():
     array = range(%i)
     shuffle(array)
     quicksort_ip(array, 0, len(array)-1)
+    """% array_size, "from __main__ import *")
+    do_timing(t)
+
+    print "Quicksort list comprehension"
+    t = Timer("""
+    array = range(%i)
+    shuffle(array)
+    quicksort_lc(array[:])
     """% array_size, "from __main__ import *")
     do_timing(t)
 
