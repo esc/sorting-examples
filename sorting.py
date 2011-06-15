@@ -47,7 +47,7 @@
         one that allocates more and more lists.
 """
 
-from random import randint, shuffle, choice, randrange
+from random import randint, shuffle, choice, randrange, random
 from timeit import Timer
 import numpy
 import numpy.testing
@@ -109,13 +109,63 @@ def quicksort_ip(array, low, high):
         return
     part, counter = randint(low, high), low
     swap(array, part, low)
+    array_low = array[low]
     for i in xrange(low+1, high+1):
-        if array[i] < array[low]:
+        if array[i] < array_low:
             counter += 1
             swap(array, counter, i)
     swap(array, low, counter)
     quicksort_ip(array, low, counter-1)
     quicksort_ip(array, counter+1, high)
+
+#@profile
+def quicksort_pb(array, low, high):
+    """ Quicksort 'array' in-place, optimized.
+
+    This function works exactly like quicksort_ip, heavily
+    optimized at the expenses at readability.
+
+    Parameters
+    ----------
+    low : int
+        smallest index to consider
+    high : int
+        largest index to consider
+    """
+    stack_left = [None] * 100
+    stack_right = [None] * 100
+    idx_left = 0
+    idx_right = -1
+    stack_left[0] = (low, high)
+    while True:
+        while idx_left > -1:
+            low, high = stack_left[idx_left]
+            idx_left -= 1
+            if low < high: break
+            if idx_right > -1:
+                low, high = stack_right[idx_right]
+                idx_right -= 1
+                if low < high: break
+        else:
+            return
+
+        part = int(random() * (high-low) + low)
+        counter = low
+        #swap(array, part, low)
+        array[part], array[low] = array[low], array[part]
+        array_low = array[low]
+        for i in xrange(low+1, high+1):
+            if array[i] < array_low:
+                counter += 1
+                #swap(array, counter, i)
+                array[counter], array[i] = array[i], array[counter]
+        #swap(array, low, counter)
+        array[low], array[counter] = array[counter], array[low]
+        idx_left += 1
+        stack_left[idx_left] = (low, counter-1)
+        if counter+1 < high:
+            idx_right += 1
+            stack_right[idx_right] = (counter+1, high)
 
 def quicksort_lc(array):
     """ This is a Quicksort using list comprehensions.
@@ -295,6 +345,11 @@ def testing():
     nt.assert_equal(target_array, original)
 
     shuffle(target_array)
+    print "Quicksort in-place, optimized"
+    quicksort_pb(target_array, 0, len(target_array)-1)
+    nt.assert_equal(target_array, original)
+
+    shuffle(target_array)
     print "Quicksort list comprehension"
     to_sort = target_array[:]
     nt.assert_equal(quicksort_lc(to_sort), original)
@@ -343,6 +398,14 @@ def timing():
     target_array = range(%i)
     shuffle(target_array)
     quicksort_ip(target_array, 0, len(target_array)-1)
+    """% array_size, "from __main__ import *")
+    do_timing(t)
+
+    print "Quicksort in-place, optimized"
+    t = Timer("""
+    target_array = range(%i)
+    shuffle(target_array)
+    quicksort_pb(target_array, 0, len(target_array)-1)
     """% array_size, "from __main__ import *")
     do_timing(t)
 
