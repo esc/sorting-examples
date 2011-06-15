@@ -47,7 +47,7 @@
         one that allocates more and more lists.
 """
 
-from random import randint, shuffle, choice, randrange
+from random import randint, shuffle, choice, randrange, random
 from timeit import Timer
 import numpy
 import numpy.testing
@@ -109,13 +109,67 @@ def quicksort_ip(array, low, high):
         return
     part, counter = randint(low, high), low
     swap(array, part, low)
+    array_low = array[low]
     for i in xrange(low+1, high+1):
-        if array[i] < array[low]:
+        if array[i] < array_low:
             counter += 1
             swap(array, counter, i)
     swap(array, low, counter)
     quicksort_ip(array, low, counter-1)
     quicksort_ip(array, counter+1, high)
+
+def quicksort_pb(array):
+    """ Quicksort 'array' in-place, optimized.
+
+    This function works exactly like quicksort_ip, heavily
+    optimized at the expenses at readability.
+
+    Parameters
+    ----------
+    low : int
+        smallest index to consider
+    high : int
+        largest index to consider
+    """
+
+    # init stack, used to avoid recursion
+    low, high = 0, len(array)-1
+    stack_len = int(numpy.log(high)*20)
+    stack_left = [None] * stack_len
+    stack_right = [None] * stack_len
+    idx_left = 0
+    idx_right = -1
+    
+    stack_left[0] = (low, high)
+    while True:
+        while idx_left > -1:
+            low, high = stack_left[idx_left]
+            idx_left -= 1
+            if low < high: break
+            if idx_right > -1:
+                low, high = stack_right[idx_right]
+                idx_right -= 1
+                if low < high: break
+        else:
+            return
+
+        part = int(random() * (high-low) + low)
+        counter = low
+        #swap(array, part, low)
+        array[part], array[low] = array[low], array[part]
+        array_low = array[low]
+        for i in xrange(low+1, high+1):
+            if array[i] < array_low:
+                counter += 1
+                #swap(array, counter, i)
+                array[counter], array[i] = array[i], array[counter]
+        #swap(array, low, counter)
+        array[low], array[counter] = array[counter], array[low]
+        idx_left += 1
+        stack_left[idx_left] = (low, counter-1)
+        if counter+1 < high:
+            idx_right += 1
+            stack_right[idx_right] = (counter+1, high)
 
 def quicksort_lc(array):
     """ This is a Quicksort using list comprehensions.
@@ -295,6 +349,11 @@ def testing():
     nt.assert_equal(target_array, original)
 
     shuffle(target_array)
+    print "Quicksort in-place, optimized"
+    quicksort_pb(target_array)
+    nt.assert_equal(target_array, original)
+
+    shuffle(target_array)
     print "Quicksort list comprehension"
     to_sort = target_array[:]
     nt.assert_equal(quicksort_lc(to_sort), original)
@@ -330,60 +389,53 @@ def timing():
     print 'Timing'
     print "-----------------------------------------------------------"
 
+    def get_timer(func_name, args_str='target_array'):
+        """
+        Parameters
+        ----------
+        func_name -- string with name of the sorting function
+        args_str -- string with list of arguments
+        """
+
+        _timer_code = """
+        target_array = range(%(size)i)
+        shuffle(target_array)
+        %(func_name)s(%(args)s)
+        """
+        _timer_import = 'from __main__ import shuffle, %(func_name)s'
+        _dict = {'size': array_size, 'func_name': func_name, 'args': args_str }
+        return Timer(_timer_code % _dict, _timer_import % _dict)
+        
+
     print "Quicksort (val's)"
-    t = Timer("""
-    target_array = range(%i)
-    shuffle(target_array)
-    quicksort_val(target_array)
-    """% array_size, "from __main__ import *" )
-    do_timing(t)
+    do_timing(get_timer('quicksort_val'))
 
     print "Quicksort in-place"
-    t = Timer("""
-    target_array = range(%i)
-    shuffle(target_array)
-    quicksort_ip(target_array, 0, len(target_array)-1)
-    """% array_size, "from __main__ import *")
-    do_timing(t)
+    do_timing(get_timer('quicksort_ip',
+                        'target_array, 0, len(target_array)-1'))
+
+
+    print "Quicksort in-place, optimized"
+    do_timing(get_timer('quicksort_pb'))
 
     print "Quicksort list comprehension"
-    t = Timer("""
-    target_array = range(%i)
-    shuffle(target_array)
-    quicksort_lc(target_array[:])
-    """% array_size, "from __main__ import *")
-    do_timing(t)
+    do_timing(get_timer('quicksort_lc', 'target_array[:]'))
 
     print 'Mergesort'
-    t = Timer("""
-    target_array = range(%i)
-    shuffle(target_array)
-    mergesort(target_array)
-    """% array_size, "from __main__ import *")
-    do_timing(t)
+    do_timing(get_timer('mergesort'))
 
     print 'Mergesort2'
-    t = Timer("""
-    target_array = range(%i)
-    shuffle(target_array)
-    mergesort2(target_array)
-    """% array_size, "from __main__ import *")
-    do_timing(t)
+    do_timing(get_timer('mergesort2'))
 
     print 'Mergesort3'
-    t = Timer("""
-    target_array = range(%i)
-    shuffle(target_array)
-    mergesort3(target_array)
-    """% array_size, "from __main__ import *")
-    do_timing(t)
+    do_timing(get_timer('mergesort3'))
 
     print 'Native'
     t = Timer("""
     target_array = range(%i)
     shuffle(target_array)
     target_array.sort()
-    """% array_size, "from __main__ import *")
+    """% array_size, "from __main__ import shuffle")
     do_timing(t)
 
     print 'Numpy'
@@ -391,7 +443,7 @@ def timing():
     np_array = numpy.arange(%i)
     numpy.random.shuffle(np_array)
     np_array.sort()
-    """% array_size, "from __main__ import *")
+    """% array_size, "from __main__ import shuffle, numpy")
     do_timing(t)
 
     print "-----------------------------------------------------------"
