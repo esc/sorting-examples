@@ -389,68 +389,53 @@ def timing():
     print 'Timing'
     print "-----------------------------------------------------------"
 
+    def get_timer(func_name, args_str='target_array'):
+        """
+        Parameters
+        ----------
+        func_name -- string with name of the sorting function
+        args_str -- string with list of arguments
+        """
+
+        _timer_code = """
+        target_array = range(%(size)i)
+        shuffle(target_array)
+        %(func_name)s(%(args)s)
+        """
+        _timer_import = 'from __main__ import shuffle, %(func_name)s'
+        _dict = {'size': array_size, 'func_name': func_name, 'args': args_str }
+        return Timer(_timer_code % _dict, _timer_import % _dict)
+        
+
     print "Quicksort (val's)"
-    t = Timer("""
-    target_array = range(%i)
-    shuffle(target_array)
-    quicksort_val(target_array)
-    """% array_size, "from __main__ import *" )
-    do_timing(t)
+    do_timing(get_timer('quicksort_val'))
 
     print "Quicksort in-place"
-    t = Timer("""
-    target_array = range(%i)
-    shuffle(target_array)
-    quicksort_ip(target_array, 0, len(target_array)-1)
-    """% array_size, "from __main__ import *")
-    do_timing(t)
+    do_timing(get_timer('quicksort_ip',
+                        'target_array, 0, len(target_array)-1'))
+
 
     print "Quicksort in-place, optimized"
-    t = Timer("""
-    target_array = range(%i)
-    shuffle(target_array)
-    quicksort_pb(target_array, 0, len(target_array)-1)
-    """% array_size, "from __main__ import *")
-    do_timing(t)
+    do_timing(get_timer('quicksort_pb'))
 
     print "Quicksort list comprehension"
-    t = Timer("""
-    target_array = range(%i)
-    shuffle(target_array)
-    quicksort_lc(target_array[:])
-    """% array_size, "from __main__ import *")
-    do_timing(t)
+    do_timing(get_timer('quicksort_lc', 'target_array[:]'))
 
     print 'Mergesort'
-    t = Timer("""
-    target_array = range(%i)
-    shuffle(target_array)
-    mergesort(target_array)
-    """% array_size, "from __main__ import *")
-    do_timing(t)
+    do_timing(get_timer('mergesort'))
 
     print 'Mergesort2'
-    t = Timer("""
-    target_array = range(%i)
-    shuffle(target_array)
-    mergesort2(target_array)
-    """% array_size, "from __main__ import *")
-    do_timing(t)
+    do_timing(get_timer('mergesort2'))
 
     print 'Mergesort3'
-    t = Timer("""
-    target_array = range(%i)
-    shuffle(target_array)
-    mergesort3(target_array)
-    """% array_size, "from __main__ import *")
-    do_timing(t)
+    do_timing(get_timer('mergesort3'))
 
     print 'Native'
     t = Timer("""
     target_array = range(%i)
     shuffle(target_array)
     target_array.sort()
-    """% array_size, "from __main__ import *")
+    """% array_size, "from __main__ import shuffle")
     do_timing(t)
 
     print 'Numpy'
@@ -458,7 +443,7 @@ def timing():
     np_array = numpy.arange(%i)
     numpy.random.shuffle(np_array)
     np_array.sort()
-    """% array_size, "from __main__ import *")
+    """% array_size, "from __main__ import shuffle, numpy")
     do_timing(t)
 
     print "-----------------------------------------------------------"
