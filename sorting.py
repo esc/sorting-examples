@@ -7,36 +7,41 @@
     Author: Valentin Haenel
     Licence: wtfpl unless specified otherwise in attribution
 
-    Current profiling on my machine (1.6 Ghz Dual Core Intel 3GB Ram:
+    Profiling f77dbd0 on my machine (1.6 Ghz Dual Core Intel 3GB Ram:
 
     Timing
     -----------------------------------------------------------
-    Quicksort (vals's)
-    666.68 mseconds/pass
+    Quicksort (val's)
+    798.21 mseconds/pass
     Quicksort in-place
-    1249.86 mseconds/pass
+    1192.77 mseconds/pass
+    Quicksort in-place, optimized
+    844.99 mseconds/pass
     Quicksort list comprehension
-    993.46 mseconds/pass
+    1031.70 mseconds/pass
     Mergesort
-    4212.00 mseconds/pass
+    4322.83 mseconds/pass
     Mergesort2
-    1972.76 mseconds/pass
+    1916.87 mseconds/pass
     Mergesort3
-    1542.45 mseconds/pass
+    1500.32 mseconds/pass
     Native
-    166.63 mseconds/pass
+    151.59 mseconds/pass
     Numpy
-    36.57 mseconds/pass
+    39.25 mseconds/pass
+
+
 
     Leading to the following ranking:
         1) Numpy
         2) Native
         3) Quicksort (vals's)
-        4) Quicksort list comprehension
-        5) Quicksort in-place
-        6) Mergesort3
-        7) Mergesort2
-        8) Mergesort1
+        4) Quicksort in-place, optimized
+        5) Quicksort list comprehension
+        6) Quicksort in-place
+        7) Mergesort3
+        8) Mergesort2
+        9) Mergesort1
 
     A couple of things to note:
         a) Native and Numpy are an order of magnitude faster.
@@ -44,7 +49,7 @@
         theoretically. (Maybe also the reason for numpy being faster than
         native, since Timsort is a Mergesort/Insertionsort hybrid)
         c) What baffles me, is that the inplace Quicksort isn't faster than the
-        one that allocates more and more lists.
+        one that allocates more and more lists. Even the highly optimized one.
 """
 
 from random import randint, shuffle, choice, randrange, random
@@ -121,6 +126,8 @@ def quicksort_ip(array, low, high):
 def quicksort_pb(array):
     """ Quicksort 'array' in-place, optimized.
 
+    Contributed by Pietro Berkes
+
     This function works exactly like quicksort_ip, heavily
     optimized at the expenses at readability.
 
@@ -139,7 +146,7 @@ def quicksort_pb(array):
     stack_right = [None] * stack_len
     idx_left = 0
     idx_right = -1
-    
+
     stack_left[0] = (low, high)
     while True:
         while idx_left > -1:
@@ -405,7 +412,7 @@ def timing():
         _timer_import = 'from __main__ import shuffle, %(func_name)s'
         _dict = {'size': array_size, 'func_name': func_name, 'args': args_str }
         return Timer(_timer_code % _dict, _timer_import % _dict)
-        
+
 
     print "Quicksort (val's)"
     do_timing(get_timer('quicksort_val'))
