@@ -118,8 +118,7 @@ def quicksort_ip(array, low, high):
     quicksort_ip(array, low, counter-1)
     quicksort_ip(array, counter+1, high)
 
-#@profile
-def quicksort_pb(array, low, high):
+def quicksort_pb(array):
     """ Quicksort 'array' in-place, optimized.
 
     This function works exactly like quicksort_ip, heavily
@@ -132,10 +131,15 @@ def quicksort_pb(array, low, high):
     high : int
         largest index to consider
     """
-    stack_left = [None] * 100
-    stack_right = [None] * 100
+
+    # init stack, used to avoid recursion
+    low, high = 0, len(array)-1
+    stack_len = int(numpy.log(high)*20)
+    stack_left = [None] * stack_len
+    stack_right = [None] * stack_len
     idx_left = 0
     idx_right = -1
+    
     stack_left[0] = (low, high)
     while True:
         while idx_left > -1:
@@ -346,7 +350,7 @@ def testing():
 
     shuffle(target_array)
     print "Quicksort in-place, optimized"
-    quicksort_pb(target_array, 0, len(target_array)-1)
+    quicksort_pb(target_array)
     nt.assert_equal(target_array, original)
 
     shuffle(target_array)
