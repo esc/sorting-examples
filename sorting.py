@@ -198,7 +198,7 @@ def quicksort_lc(array):
     sorted : list
         a sorted list
     """
-    if array == []: 
+    if array == []:
         return []
     else:
         pivot = array.pop(randrange(len(array)))
@@ -331,6 +331,38 @@ def merge3(array1, array2):
     result += array2[j:]
     return result
 
+def mergesort4(array):
+    """ Stable in-place mergesort.
+
+    Inspired by a codility exercise. Needs no pops or appends, just slicing.
+
+    """
+    if len(array) < 2:
+        return 0
+    m = (len(array) + 1) / 2
+    left = array[0:m]
+    right = array[m:len(array)]
+    mergesort4(left)
+    mergesort4(right)
+    merge4(array, left, right)
+
+def merge4(array, left, right):
+    i, j = 0, 0
+    while i < len(left) or j < len(right):
+        if i == len(left):
+            array[i + j] = right[j]
+            j += 1
+        elif j == len(right):
+            array[i + j] = left[i]
+            i += 1
+        elif left[i] <= right[j]:
+            array[i + j] = left[i]
+            i += 1
+        else:
+            array[i + j] = right[j]
+            j += 1
+
+
 number_repeats = 10
 array_size = 50000
 def do_timing(timer):
@@ -376,6 +408,12 @@ def testing():
     shuffle(target_array)
     print 'Mergesort3'
     nt.assert_equal(mergesort3(target_array), original)
+
+    shuffle(target_array)
+    print 'Mergesort4'
+    to_sort = target_array[:]
+    mergesort4(target_array)
+    nt.assert_equal(target_array, original)
 
     shuffle(target_array)
     print 'Native'
@@ -436,6 +474,9 @@ def timing():
 
     print 'Mergesort3'
     do_timing(get_timer('mergesort3'))
+
+    print 'Mergesort4'
+    do_timing(get_timer('mergesort4'))
 
     print 'Native'
     t = Timer("""
