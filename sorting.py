@@ -7,28 +7,31 @@
     Author: Valentin Haenel
     Licence: wtfpl unless specified otherwise in attribution
 
-    Profiling f77dbd0 on my machine (1.6 Ghz Dual Core Intel 3GB Ram:
+    Profiling 3b18c79 on my machine (3.20GHz Ghz Quad Core Intel 6GB Ram with
+    Hyperthreading enabled:
 
     Timing
     -----------------------------------------------------------
     Quicksort (val's)
-    798.21 mseconds/pass
+    166.09 mseconds/pass
     Quicksort in-place
-    1192.77 mseconds/pass
+    252.70 mseconds/pass
     Quicksort in-place, optimized
-    844.99 mseconds/pass
+    166.33 mseconds/pass
     Quicksort list comprehension
-    1031.70 mseconds/pass
+    187.01 mseconds/pass
     Mergesort
-    4322.83 mseconds/pass
+    807.52 mseconds/pass
     Mergesort2
-    1916.87 mseconds/pass
+    372.50 mseconds/pass
     Mergesort3
-    1500.32 mseconds/pass
+    275.95 mseconds/pass
+    Mergesort4
+    320.43 mseconds/pass
     Native
-    151.59 mseconds/pass
+    32.07 mseconds/pass
     Numpy
-    39.25 mseconds/pass
+    10.34 mseconds/pass
 
 
 
@@ -40,6 +43,7 @@
         5) Quicksort list comprehension
         6) Quicksort in-place
         7) Mergesort3
+        7) Mergesort4
         8) Mergesort2
         9) Mergesort1
 
