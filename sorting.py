@@ -56,11 +56,15 @@
         one that allocates more and more lists. Even the highly optimized one.
 """
 
+import sys
 from random import randint, shuffle, choice, randrange, random
 from timeit import Timer
 import numpy
 import numpy.testing
 import nose.tools as nt
+
+print sys.getrecursionlimit()
+sys.setrecursionlimit(2000)
 
 def quicksort_val(array):
     """ Stable out-of-place Quicksort.
@@ -367,8 +371,27 @@ def merge4(array, left, right):
             j += 1
 
 
+def mergesort5(lst):
+    """ Taken from:
+
+    https://github.com/hugopeixoto/mergesort/blob/master/python/mergesort.py
+
+    """
+    if len(lst) < 2:
+        return lst
+
+    m = len(lst)/2
+    return merge5(mergesort5(lst[:m]), mergesort5(lst[m:]))
+
+def merge5(a, b):
+    if len(a)*len(b) == 0:
+        return a+b
+
+    v = (a[0] < b[0] and a or b).pop(0)
+    return [v] + merge5(a, b)
+
 number_repeats = 10
-array_size = 50000
+array_size = 2000
 def do_timing(timer):
     """ Execute timer and print result."""
     print ("%.2f mseconds/pass" %
@@ -418,6 +441,10 @@ def testing():
     to_sort = target_array[:]
     mergesort4(target_array)
     nt.assert_equal(target_array, original)
+
+    shuffle(target_array)
+    print 'Mergesort5'
+    nt.assert_equal(mergesort5(target_array), original)
 
     shuffle(target_array)
     print 'Native'
@@ -481,6 +508,9 @@ def timing():
 
     print 'Mergesort4'
     do_timing(get_timer('mergesort4'))
+
+    print 'Mergesort5'
+    do_timing(get_timer('mergesort5'))
 
     print 'Native'
     t = Timer("""
